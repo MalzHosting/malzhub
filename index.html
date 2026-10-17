@@ -190,7 +190,7 @@ const toolDefs=[
 const $=id=>document.getElementById(id);
 const stateKey="malzhub_state_v1";
 let state=loadState(), currentLesson=0, quizOrder=[], quizIndex=0, quizPoints=0, quizAnswered=false, currentChallenge=null, certificateData=null;
-function loadState(){try{return Object.assign({xp:0,done:[],solved:[],correct:0,profile:{name:"Hikmal Apriansyah",handle:"MalzXploit"},bookmarks:[]},JSON.parse(localStorage.getItem(stateKey)||"{}"))}catch(e){return {xp:0,done:[],solved:[],correct:0,profile:{name:"Hikmal Apriansyah",handle:"MalzXploit"},bookmarks:[]}}}
+function loadState(){try{return Object.assign({xp:0,done:[],solved:[],correct:0,profile:{name:"Learner",handle:"MalzXploit"},bookmarks:[]},JSON.parse(localStorage.getItem(stateKey)||"{}"))}catch(e){return {xp:0,done:[],solved:[],correct:0,profile:{name:"Learner",handle:"MalzXploit"},bookmarks:[]}}}
 function save(){localStorage.setItem(stateKey,JSON.stringify(state));updateStats()}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(s){const t=$("toast");t.textContent=s;t.style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display="none",2400)}
