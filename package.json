@@ -5,5 +5,8 @@
   "description": "MalzHub Cyber Labs static educational website",
   "scripts": {
     "start": "python3 -m http.server 8080"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.35.3"
   }
 }
