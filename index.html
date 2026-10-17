@@ -12,6 +12,27 @@
 @media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.app{grid-template-columns:215px minmax(0,1fr)}}
 @media(max-width:700px){.app{display:block}.side{display:none}.main{padding:18px 14px 35px}.mobilehead{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}.mobilebrand{display:flex;gap:9px;align-items:center;font-weight:850}.mobilebrand .logo{width:34px;height:34px}.topbar{margin-bottom:22px}.grid,.grid.two{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:23px}.hero{padding:22px 18px}.sectionhead{margin-top:24px}.filter{max-width:none}.topright .pill{display:none}.footer{display:block}.footer span{display:block;margin-top:5px}}
 @media print{body{background:white;color:#111}.side,.topbar,.mobilehead,.footer,.no-print{display:none!important}.app{display:block}.main{padding:0;max-width:none}.page{display:none!important}#page-certificates{display:block!important}.certificate{display:block!important;margin:0 auto;width:100%;max-width:800px;page-break-inside:avoid}.certificate h2{color:#17252b}.certificate p{color:#333}.certlist{display:none!important}}
+
+/* MalzHub authentication */
+.malz-auth-trigger{border:1px solid #38465a;background:#192230;color:#e8edf5;padding:9px 13px;border-radius:9px;font-weight:750;font-size:12px}
+.malz-auth-trigger:hover{border-color:var(--accent)}
+.malz-auth-overlay{position:fixed;inset:0;z-index:1000;background:#070a10eF;display:none;align-items:center;justify-content:center;padding:18px;overflow:auto}
+.malz-auth-overlay.open{display:flex}
+.malz-auth-card{width:min(100%,430px);background:#121722;border:1px solid #344155;border-radius:18px;padding:25px;box-shadow:0 25px 100px #0009}
+.malz-auth-brand{font-size:11px;letter-spacing:2px;color:var(--accent);font-weight:850}
+.malz-auth-card h2{font-size:27px;line-height:1.2;margin:10px 0}
+.malz-auth-description{font-size:13px;color:var(--muted);margin-bottom:20px}
+.malz-auth-card label{display:block;font-size:12px;color:#b9c5d5;margin:13px 0 6px}
+.malz-auth-card .field{margin:0}
+.malz-auth-actions{display:grid;gap:10px;margin-top:18px}
+.malz-auth-actions .btn{width:100%}
+.malz-auth-switch{font-size:12px;color:var(--muted);text-align:center;margin-top:16px}
+.malz-auth-switch button{border:0;background:none;color:var(--accent);font-weight:750}
+.malz-auth-message{font-size:12px;color:var(--red);margin-top:12px;overflow-wrap:anywhere}
+.malz-auth-message.success{color:var(--accent)}
+.malz-auth-guest{display:block;width:100%;margin-top:12px;border:0;background:none;color:#aab6c8;padding:8px}
+@media(max-width:700px){.malz-auth-card{padding:21px}.malz-auth-trigger{padding:8px 10px}}
+
 </style>
 </head>
 <body>
@@ -32,7 +53,9 @@
 </aside>
 <main class="main">
  <div class="mobilehead"><div class="mobilebrand"><div class="logo">M</div>MalzHub</div><select class="field" id="mobileNav" style="width:auto;padding:8px"><option value="dashboard">Overview</option><option value="academy">Academy</option><option value="quiz">Quiz</option><option value="ctf">CTF</option><option value="tools">Tools</option><option value="glossary">Glossary</option><option value="certificates">Certificates</option><option value="settings">Settings</option></select></div>
- <div class="topbar"><div class="crumb">MalzHub <span class="muted">/</span> <b id="crumb">Overview</b></div><div class="topright"><div class="pill">XP <strong id="topXp">0</strong></div><div class="pill">LEVEL <strong id="topLevel">1</strong></div><div class="avatar" id="avatar">H</div></div></div>
+ <div class="topbar"><div class="crumb">MalzHub <span class="muted">/</span> <b id="crumb">Overview</b></div><div class="topright">
+<button class="malz-auth-trigger" id="malzAuthTrigger" type="button">Masuk / Daftar</button>
+<div class="pill">XP <strong id="topXp">0</strong></div><div class="pill">LEVEL <strong id="topLevel">1</strong></div><div class="avatar" id="avatar">H</div></div></div>
 
  <section class="page active" id="page-dashboard">
   <div class="hero"><div class="eyebrow">Cybersecurity learning environment</div><h1 class="title">Learn the system.<br>Understand the threat.</h1><p>Bangun fondasi cybersecurity, pahami jaringan dan web security, lalu uji pengetahuan lewat lab simulasi yang aman.</p><div class="actions"><button class="btn primary" data-go="academy">Mulai belajar <span aria-hidden="true">→</span></button><button class="btn" data-go="ctf">Buka CTF Playground</button></div></div>
@@ -240,5 +263,226 @@ $("toolSearch").oninput=renderTools;$("toolFilter").onchange=renderTools;$("glos
 $("nextQuestion").onclick=()=>{quizIndex++;showQuestion()};$("restartQuiz").onclick=startQuiz;
 renderLessons();renderFeatured();renderTools();renderGlossary();renderCTF();startQuiz();updateStats();
 </script>
+
+<div class="malz-auth-overlay" id="malzAuthModal" role="dialog"
+     aria-modal="true" aria-labelledby="malzAuthTitle">
+  <div class="malz-auth-card">
+    <div class="malz-auth-brand">MALZHUB CYBER LABS</div>
+    <h2 id="malzAuthTitle">Selamat datang kembali</h2>
+    <p class="malz-auth-description" id="malzAuthDescription">
+      Masuk ke akunmu untuk mengakses sesi pengguna.
+    </p>
+
+    <form id="malzAuthForm">
+      <div id="malzAuthUsernameWrap" hidden>
+        <label for="malzAuthUsername">Username</label>
+        <input class="field" id="malzAuthUsername" name="username"
+               autocomplete="username" minlength="3" maxlength="24"
+               pattern="[A-Za-z0-9_]{3,24}"
+               placeholder="Contoh: MalzXploit">
+      </div>
+
+      <label for="malzAuthEmail">Email</label>
+      <input class="field" id="malzAuthEmail" name="email" type="email"
+             autocomplete="email" maxlength="254" required
+             placeholder="nama@email.com">
+
+      <label for="malzAuthPassword">Password</label>
+      <input class="field" id="malzAuthPassword" name="password"
+             type="password" autocomplete="current-password"
+             minlength="10" maxlength="128" required
+             placeholder="Minimal 10 karakter">
+
+      <div class="malz-auth-actions">
+        <button class="btn primary" id="malzAuthSubmit" type="submit">Masuk</button>
+      </div>
+      <div class="malz-auth-message" id="malzAuthMessage" role="status"></div>
+    </form>
+
+    <div class="malz-auth-switch">
+      <span id="malzAuthSwitchText">Belum punya akun?</span>
+      <button id="malzAuthSwitch" type="button">Daftar</button>
+    </div>
+    <button class="malz-auth-guest" id="malzAuthGuest" type="button">
+      Lanjut sebagai tamu
+    </button>
+  </div>
+</div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const modal = $("malzAuthModal");
+  const form = $("malzAuthForm");
+  if (!modal || !form) return;
+
+  let authMode = "login";
+  let currentUser = null;
+
+  function showMessage(message, success) {
+    const box = $("malzAuthMessage");
+    box.textContent = message || "";
+    box.classList.toggle("success", !!success);
+  }
+
+  function openModal() {
+    modal.classList.add("open");
+    $("malzAuthEmail").focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove("open");
+  }
+
+  function setMode(mode) {
+    authMode = mode;
+    const registering = mode === "register";
+    $("malzAuthTitle").textContent = registering ? "Buat akun MalzHub" : "Selamat datang kembali";
+    $("malzAuthDescription").textContent = registering
+      ? "Daftar untuk membuat akun belajar."
+      : "Masuk menggunakan email dan password akunmu.";
+    $("malzAuthUsernameWrap").hidden = !registering;
+    $("malzAuthUsername").required = registering;
+    $("malzAuthPassword").autocomplete = registering ? "new-password" : "current-password";
+    $("malzAuthPassword").minLength = registering ? 10 : 1;
+    $("malzAuthSubmit").textContent = registering ? "Buat akun" : "Masuk";
+    $("malzAuthSwitchText").textContent = registering ? "Sudah punya akun?" : "Belum punya akun?";
+    $("malzAuthSwitch").textContent = registering ? "Masuk" : "Daftar";
+    showMessage("");
+  }
+
+  function paintUser(user) {
+    currentUser = user || null;
+    const trigger = $("malzAuthTrigger");
+    if (trigger) {
+      trigger.textContent = currentUser
+        ? (currentUser.username || currentUser.email) + " · Keluar"
+        : "Masuk / Daftar";
+      trigger.title = currentUser ? "Klik untuk keluar dari akun" : "Masuk atau buat akun";
+    }
+    if (currentUser) {
+      closeModal();
+      showMessage("");
+    }
+  }
+
+  async function requestJSON(url, options) {
+    const response = await fetch(url, {
+      credentials: "same-origin",
+      cache: "no-store",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(options && options.headers ? options.headers : {})
+      }
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Respons server tidak valid. Periksa deployment API.");
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || "Permintaan gagal (" + response.status + ").");
+    }
+    return data;
+  }
+
+  $("malzAuthTrigger").addEventListener("click", async function () {
+    if (!currentUser) {
+      setMode("login");
+      openModal();
+      return;
+    }
+
+    if (!confirm("Keluar dari akun MalzHub?")) return;
+
+    try {
+      await requestJSON("/api/auth/logout", { method: "POST", body: "{}" });
+      paintUser(null);
+      setMode("login");
+      openModal();
+      showMessage("Kamu sudah keluar dari akun.", true);
+    } catch (error) {
+      showMessage(error.message);
+      openModal();
+    }
+  });
+
+  $("malzAuthSwitch").addEventListener("click", function () {
+    setMode(authMode === "login" ? "register" : "login");
+  });
+
+  $("malzAuthGuest").addEventListener("click", closeModal);
+
+  modal.addEventListener("click", function (event) {
+    if (event.target === modal) closeModal();
+  });
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const submit = $("malzAuthSubmit");
+    submit.disabled = true;
+    showMessage("Memproses permintaan...");
+
+    const payload = {
+      email: $("malzAuthEmail").value.trim(),
+      password: $("malzAuthPassword").value
+    };
+
+    if (authMode === "register") {
+      payload.username = $("malzAuthUsername").value.trim();
+    }
+
+    try {
+      const endpoint = authMode === "register"
+        ? "/api/auth/register"
+        : "/api/auth/login";
+
+      const result = await requestJSON(endpoint, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      paintUser(result.user);
+      form.reset();
+      setMode("login");
+      showMessage(
+        authMode === "register" ? "Akun berhasil dibuat." : "Login berhasil.",
+        true
+      );
+    } catch (error) {
+      showMessage(error.message || "Tidak dapat menghubungi server.");
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  async function checkSession() {
+    try {
+      const result = await requestJSON("/api/auth/me", { method: "GET" });
+      paintUser(result.user || null);
+      if (!result.user) {
+        setMode("login");
+        openModal();
+      }
+    } catch (error) {
+      paintUser(null);
+      setMode("login");
+      openModal();
+      showMessage("API belum siap: " + error.message);
+    }
+  }
+
+  setMode("login");
+  checkSession();
+})();
+</script>
+
 </body>
 </html>
